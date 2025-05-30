@@ -62,7 +62,6 @@ def salvar_pais(pais_info):
     conn = sqlite3.connect('paises.db')
     cursor = conn.cursor()
     
-    # Lista EXPLÍCITA das colunas (exceto id)
     cursor.execute('''
     INSERT INTO paises (
         nome_comum, nome_oficial, capital, continente, regiao, subregiao,
@@ -79,23 +78,3 @@ def salvar_pais(pais_info):
     
     conn.commit()
     conn.close()
-
-def coleta_paises():
-    # Limpar dados antigos
-    conn = sqlite3.connect('paises.db')
-    conn.execute("DELETE FROM paises")
-    conn.commit()
-    conn.close()
-    
-    # Coletar novos
-    for i in range(3):
-        nome_pais = input(f"Digite o {i+1}º país (em inglês): ").strip()
-        dados = dados_pais(nome_pais)
-        if dados:
-            salvar_pais(dados)
-            print(f"Dados de {nome_pais} salvos!")
-        else:
-            print(f"Falha ao buscar {nome_pais}.")
-
-if __name__ == '__main__':
-    coleta_paises()

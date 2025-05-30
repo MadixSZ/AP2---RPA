@@ -31,11 +31,22 @@ def extrair_livros():
     livros = soup.find_all('article', class_='product_pod')[:10]
     
     dados = []
+    rating_map = {
+        'One': '★',
+        'Two': '★★',
+        'Three': '★★★',
+        'Four': '★★★★',
+        'Five': '★★★★★'
+    }
+    
     for livro in livros:
+        rating_class = livro.find('p')['class'][1]
+        avaliacao = rating_map.get(rating_class, rating_class)
+        
         dados.append({
             'titulo': livro.h3.a['title'],
-            'preco': float(livro.find('p', class_='price_color').text.replace('Â£', '')),
-            'avaliacao': livro.p['class'][1],
+            'preco': float(livro.find('p', class_='price_color').text.replace('Â£', '').replace('£', '')),
+            'avaliacao': avaliacao,
             'disponibilidade': livro.find('p', class_='instock availability').text.strip(),
             'data_consulta': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         })
@@ -46,13 +57,13 @@ def salvar_livros(livros):
     cursor = conn.cursor()
     for livro in livros:
         cursor.execute('''
-        INSERT INTO livros VALUES (NULL, ?, ?, ?, ?, ?)
-        ''', tuple(livro.values()))
+        INSERT INTO livros (titulo, preco, avaliacao, disponibilidade, data_consulta)
+        VALUES (?, ?, ?, ?, ?)
+        ''', (livro['titulo'], livro['preco'], livro['avaliacao'], livro['disponibilidade'], livro['data_consulta']))
     conn.commit()
     conn.close()
 
 def coleta_livros():
-    # Limpar dados antigos
     conn = sqlite3.connect('livraria.db')
     conn.execute("DELETE FROM livros")
     conn.commit()

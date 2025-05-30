@@ -5,7 +5,6 @@ def verificar_paises():
     conn = sqlite3.connect('paises.db')
     cursor = conn.cursor()
     
-    # Mostra todos os países cadastrados
     cursor.execute("SELECT nome_comum, capital, populacao FROM paises")
     for linha in cursor.fetchall():
         print(f"→ {linha[0]} | Capital: {linha[1]} | População: {linha[2]:,}")
@@ -17,14 +16,13 @@ def verificar_livros():
     conn = sqlite3.connect('livraria.db')
     cursor = conn.cursor()
     
-    # Mostra todos os livros cadastrados
-    cursor.execute("SELECT titulo, preco FROM livros LIMIT 5")
+    cursor.execute("SELECT titulo, preco, avaliacao FROM livros")
     for linha in cursor.fetchall():
-        print(f"→ {linha[0]} | Preço: £{linha[1]:.2f}")
+        print(f"→ {linha[0]} | Preço: £{linha[1]:.2f} | Avaliação: {linha[2]}")
     
     conn.close()
 
 if __name__ == '__main__':
     verificar_paises()
     verificar_livros()
-    print("\n✅ Verificação concluída!")
+    print("\n Verificação concluída!")
